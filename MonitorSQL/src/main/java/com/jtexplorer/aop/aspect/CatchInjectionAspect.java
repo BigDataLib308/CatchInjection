@@ -101,7 +101,7 @@ public class CatchInjectionAspect {
         String className = joinPoint.getTarget().getClass().getSimpleName() + "[" + joinPoint.getSignature().getName() + "]";
         jkExceptionInfo.setJkExceClassName(className);
         jkExceptionInfo.setJkExceDbCreateTime(new Date());
-        boolean checkResult = checkParam(paramJson);
+        boolean checkResult = checkParam(map);
         if (checkResult) {
             try {
                 if (running) {
@@ -132,8 +132,51 @@ public class CatchInjectionAspect {
         return result;
     }
 
-    private boolean checkParam(String paramJson) {
-        return true;
+   
+
+    private boolean checkParam(Map<Object, Object> map) {
+        final boolean[] flag = {true};
+        //特殊字符
+        List<String> specials = new ArrayList<>();
+        specials.add("%");
+        specials.add("#");
+        specials.add("$");
+        //关键字
+        List<String> attention = new ArrayList<>();
+        attention.add("and");
+        attention.add("or");
+        if (map.isEmpty()){
+            map.forEach((k,v)->{
+                if (!k.equals("query")){
+                    return;
+                }
+                Class<QueryEntuty> qu = null;
+                java.util.List<QueryEntuty> quList =    JsonFormatUtil.stringToArrayList(String.valueOf(v), qu);
+                if (ListUtil.isEmpty(quList)){
+                    return;
+                }
+                quList.forEach(o->{
+                    if (o.getEmptyOfWhere().isEmpty()) {
+                        //关键字符验证
+                        attention.forEach(a->{
+                            if (o.getSqlSegment().equals(a)){
+                                flag[0] = false;
+                                return;
+                            }
+                        });
+                    }else {
+                        //特殊字符验证  %,$
+                        specials.forEach(a->{
+                            if (o.getSqlSegment().equals(a)){
+                                flag[0] = false;
+                                return;
+                            }
+                        });
+                    }
+                });
+            });
+        }
+        return flag[0];
     }
 
     /**
