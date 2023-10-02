@@ -136,12 +136,12 @@ public class CatchInjectionAspect {
 
     private boolean checkParam(Map<Object, Object> map) {
         final boolean[] flag = {true};
-        //特殊字符
+        
         List<String> specials = new ArrayList<>();
         specials.add("%");
         specials.add("#");
         specials.add("$");
-        //关键字
+        
         List<String> attention = new ArrayList<>();
         attention.add("and");
         attention.add("or");
