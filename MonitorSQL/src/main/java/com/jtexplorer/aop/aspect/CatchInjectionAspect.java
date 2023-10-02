@@ -136,12 +136,10 @@ public class CatchInjectionAspect {
 
     private boolean checkParam(Map<Object, Object> map) {
         final boolean[] flag = {true};
-        
         List<String> specials = new ArrayList<>();
         specials.add("%");
         specials.add("#");
         specials.add("$");
-        
         List<String> attention = new ArrayList<>();
         attention.add("and");
         attention.add("or");
@@ -157,7 +155,6 @@ public class CatchInjectionAspect {
                 }
                 quList.forEach(o->{
                     if (o.getEmptyOfWhere().isEmpty()) {
-                        //关键字符验证
                         attention.forEach(a->{
                             if (o.getSqlSegment().equals(a)){
                                 flag[0] = false;
@@ -165,7 +162,6 @@ public class CatchInjectionAspect {
                             }
                         });
                     }else {
-                        //特殊字符验证  %,$
                         specials.forEach(a->{
                             if (o.getSqlSegment().equals(a)){
                                 flag[0] = false;
